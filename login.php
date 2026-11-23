@@ -2,6 +2,7 @@
 <?php
 session_start();
 require "db.php";
+require "functions.php";
 
 if (!empty($_SESSION["user_id"])) {
     header("Location: index.php");
@@ -12,6 +13,10 @@ $error = "";
 $email = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if (!verify_csrf()) {
+        http_response_code(403);
+        exit("Invalid security token.");
+    }
     $email = trim($_POST["email"] ?? "");
     $password = $_POST["password"] ?? "";
 
@@ -44,6 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <title>Login</title>
     <link rel="stylesheet" href="style.css">
     <script src="theme.js"></script>
+    <script src="app.js" defer></script>
 </head>
 <body>
 <div class="form-card">
@@ -65,6 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <?php endif; ?>
 
     <form method="POST">
+        <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
         <label>Email Address</label>
         <input type="email" name="email" required
                autocomplete="email"

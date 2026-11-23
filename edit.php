@@ -2,6 +2,7 @@
 <?php
 require "auth.php";
 require "db.php";
+require "functions.php";
 
 $id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
 
@@ -32,6 +33,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $error = "Please enter a valid email address.";
     } else {
         try {
+            if (!verify_csrf()) {
+                http_response_code(403);
+                exit("Invalid security token.");
+            }
             $stmt = $pdo->prepare(
                 "UPDATE students
                  SET student_number = ?, full_name = ?,
@@ -42,6 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $student_number, $full_name, $course, $email, $id
             ]);
 
+            set_flash("success", "Student updated successfully.");
             header("Location: index.php");
             exit;
         } catch (PDOException $e) {
@@ -51,10 +57,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 }
-
-function e($value) {
-    return htmlspecialchars((string)$value, ENT_QUOTES, "UTF-8");
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -63,6 +65,8 @@ function e($value) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Student</title>
     <link rel="stylesheet" href="style.css">
+    <script src="theme.js"></script>
+    <script src="app.js" defer></script>
 </head>
 <body>
 <div class="form-card">
@@ -74,6 +78,7 @@ function e($value) {
     <?php endif; ?>
 
     <form method="POST">
+        <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
         <label>Student Number</label>
         <input name="student_number" required maxlength="30"
                value="<?= e($_POST["student_number"] ?? $student["student_number"]) ?>">

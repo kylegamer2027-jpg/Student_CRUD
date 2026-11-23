@@ -112,6 +112,132 @@ a {
   margin: 0 auto;
 }
 
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 112px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  animation: card-in 0.55s ease both;
+}
+
+.stat-card::after {
+  content: "";
+  position: absolute;
+  right: -24px;
+  bottom: -34px;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.stat-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.stat-value {
+  color: var(--text);
+  font-size: 34px;
+  line-height: 1;
+}
+
+.records-heading,
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.records-heading {
+  justify-content: space-between;
+}
+
+.records-heading p {
+  margin: 4px 0 0;
+}
+
+.filter-bar {
+  margin: 18px 0 8px;
+  flex-wrap: wrap;
+}
+
+.search-field {
+  position: relative;
+  flex: 1 1 280px;
+}
+
+.search-field span {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 20px;
+  pointer-events: none;
+}
+
+.search-field input {
+  padding-left: 40px;
+}
+
+.filter-bar select {
+  min-height: 44px;
+  max-width: 220px;
+  padding: 10px 36px 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+.toast {
+  margin: -10px 0 18px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  animation: toast-in 0.45s ease both;
+}
+
+.toast.success {
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+tbody tr {
+  animation: row-in 0.4s ease both;
+}
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes row-in {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 header {
   display: flex;
   align-items: center;
@@ -501,6 +627,21 @@ button:focus-visible {
 
   .actions {
     flex-wrap: wrap;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-bar {
+    align-items: stretch;
+  }
+
+  .filter-bar select,
+  .filter-bar .btn,
+  .filter-bar .btn-cancel {
+    width: 100%;
+    max-width: none;
   }
 
   th,

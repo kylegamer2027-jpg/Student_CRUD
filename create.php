@@ -2,6 +2,7 @@
 <?php
 require "auth.php";
 require "db.php";
+require "functions.php";
 
 $error = "";
 $student_number = "";
@@ -21,6 +22,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $error = "Please enter a valid email address.";
     } else {
         try {
+            if (!verify_csrf()) {
+                http_response_code(403);
+                exit("Invalid security token.");
+            }
             $stmt = $pdo->prepare(
                 "INSERT INTO students
                 (student_number, full_name, course, email)
@@ -30,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $student_number, $full_name, $course, $email
             ]);
 
+            set_flash("success", "Student added successfully.");
             header("Location: index.php");
             exit;
         } catch (PDOException $e) {
@@ -47,6 +53,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Student</title>
     <link rel="stylesheet" href="style.css">
+    <script src="theme.js"></script>
+    <script src="app.js" defer></script>
 </head>
 <body>
 <div class="form-card">
@@ -58,6 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <?php endif; ?>
 
     <form method="POST">
+        <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
         <label>Student Number</label>
         <input name="student_number" required maxlength="30"
                value="<?= htmlspecialchars($student_number) ?>">
